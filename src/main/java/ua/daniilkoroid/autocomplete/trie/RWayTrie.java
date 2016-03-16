@@ -197,8 +197,8 @@ public class RWayTrie implements Trie {
         }
         char firstAlphabetLetter = 'a';
         //TODO: make breadth-first search
-        for (char c = firstAlphabetLetter; c < firstAlphabetLetter + ALPHABET_SIZE; c++) {
-            collect(node.next[c], pref + c, q);
+        for (char c = 0; c < ALPHABET_SIZE; c++) {
+            collect(node.next[c], pref + ('a' + c), q);
         }
     }
 

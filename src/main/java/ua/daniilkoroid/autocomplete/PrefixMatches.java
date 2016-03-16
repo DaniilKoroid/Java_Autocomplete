@@ -6,6 +6,7 @@ package ua.daniilkoroid.autocomplete;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+
 import ua.daniilkoroid.autocomplete.trie.RWayTrie;
 import ua.daniilkoroid.autocomplete.trie.Trie;
 import ua.daniilkoroid.autocomplete.trie.Tuple;
@@ -23,6 +24,11 @@ public class PrefixMatches {
      * Default length of search.
      */
     private final int DEFAULT_SEARCH_LENGTH = 3;
+    
+    /**
+     * Minimal length of string that can be added to in-memorry dictionary.
+     */
+    private final int MINIMAL_STRING_TO_ADD_LENGTH = 2;
 
     /**
      * Trie that is used to store words.
@@ -55,7 +61,7 @@ public class PrefixMatches {
     public int add(String... strings) {
         int beforeAddSize = size();
         for (String string : strings) {
-            if(string.length() < 2) {
+            if(string.length() < MINIMAL_STRING_TO_ADD_LENGTH) {
                 continue;
             }
             trie.add(new Tuple(string));
@@ -148,6 +154,7 @@ public class PrefixMatches {
      * Otherwise - returns {@link Collections#emptyList()}
      */
     private Iterable<String> getWordsOfGivenLength(Iterable<String> iterable, int length) {
+    	Iterable<String> result;
         LinkedList<String> wordsOfGivenLength;
         wordsOfGivenLength = new LinkedList<String>();
         for (String word : iterable) {
@@ -155,8 +162,11 @@ public class PrefixMatches {
                 wordsOfGivenLength.add(word);
             }
         }
-        return (Iterable<String>) (wordsOfGivenLength.isEmpty()
-                ? Collections.emptyList()
-                : wordsOfGivenLength);
+        if(wordsOfGivenLength.isEmpty()) {
+        	result = Collections.emptyList();
+        } else {
+        	result = wordsOfGivenLength;
+        }
+        return result;
     }
 }
