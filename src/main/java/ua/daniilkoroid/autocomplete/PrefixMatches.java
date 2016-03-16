@@ -55,6 +55,9 @@ public class PrefixMatches {
     public int add(String... strings) {
         int beforeAddSize = size();
         for (String string : strings) {
+            if(string.length() < 2) {
+                continue;
+            }
             trie.add(new Tuple(string, string.length()));
         }
         int afterAddSize = size();
