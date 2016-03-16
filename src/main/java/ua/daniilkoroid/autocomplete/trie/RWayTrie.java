@@ -14,13 +14,14 @@ public class RWayTrie implements Trie {
     /**
      * Inner class that represents node of trie.
      * <p>
-     * This node stores given value and also link to all next nodes.
+     * This node stores given value and also link to all next nodes. Size of
+     * used alphabet is determined by {@link #ALPHABET_SIZE}.
      * </p>
      *
      * @author Daniil_Koroid
      *
      */
-    private static class Node {
+    private class Node {
 
         /**
          * Value to be stored.
@@ -39,20 +40,17 @@ public class RWayTrie implements Trie {
          * Create node with given value.
          *
          * @param value value to be stored in node
-         * @param size size of used alphabet
          */
-        public Node(int value, int size) {
+        public Node(int value) {
+            this();
             this.value = value;
-            next = new Node[size];
         }
 
         /**
          * Create empty node.
-         *
-         * @param size size of used alphabet
          */
-        public Node(int size) {
-            next = new Node[size];
+        public Node() {
+            next = new Node[ALPHABET_SIZE];
         }
 
         /**
@@ -89,7 +87,7 @@ public class RWayTrie implements Trie {
     /**
      * Number of stored tuples.
      */
-    private final int size;
+    private int size;
 
     /**
      * Create RWayTrie.
@@ -99,12 +97,14 @@ public class RWayTrie implements Trie {
      * </p>
      */
     public RWayTrie() {
-        this.root = new Node(0, ALPHABET_SIZE);
+        this.root = new Node();
         size = 0;
     }
 
     public void add(Tuple tuple) {
-        put(root, tuple, 0);
+        if (!contains(tuple.getTerm())) {
+            put(root, tuple, 0);
+        }
     }
 
     public boolean contains(String word) {
@@ -113,10 +113,11 @@ public class RWayTrie implements Trie {
     }
 
     public boolean delete(String word) {
-        if(!contains(word)) {
+        if (!contains(word)) {
             return false;
         }
         root = delete(root, word, 0);
+        size--;
         return true;
     }
 
@@ -178,6 +179,7 @@ public class RWayTrie implements Trie {
         String term = tuple.getTerm();
         if (d == term.length()) {
             node.value = tuple.getWeight();
+            size++;
             return node;
         }
         char c = term.charAt(d);
