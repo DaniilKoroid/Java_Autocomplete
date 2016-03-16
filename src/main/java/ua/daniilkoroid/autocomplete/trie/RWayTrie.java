@@ -106,17 +106,20 @@ public class RWayTrie implements Trie {
         size = 0;
     }
 
+    @Override
     public void add(Tuple tuple) {
         if (!contains(tuple.getTerm())) {
             put(root, tuple, 0);
         }
     }
 
+    @Override
     public boolean contains(String word) {
         Node node = get(root, word, 0);
         return node != null;
     }
 
+    @Override
     public boolean delete(String word) {
         if (!contains(word)) {
             return false;
@@ -126,17 +129,20 @@ public class RWayTrie implements Trie {
         return true;
     }
 
+    @Override
     public Iterable<String> words() {
         return wordsWithPrefix(EMPTY_PREFIX);
     }
 
+    @Override
     public Iterable<String> wordsWithPrefix(String pref) {
         Node node = get(root, pref, 0);
-        Queue<String> queue = new LinkedList<String>();
+        Queue<String> queue = new LinkedList<>();
         collectBFS(node, pref, queue);
         return queue;
     }
 
+    @Override
     public int size() {
         return size;
     }
@@ -233,7 +239,7 @@ public class RWayTrie implements Trie {
         if (root == null) {
             return;
         }
-        Queue<NodePrefixTuple> nodeAndPrefixQueue = new LinkedList<NodePrefixTuple>();
+        Queue<NodePrefixTuple> nodeAndPrefixQueue = new LinkedList<>();
         nodeAndPrefixQueue.add(new NodePrefixTuple(root, basePrefix));
         while (!nodeAndPrefixQueue.isEmpty()) {
             NodePrefixTuple tuple = nodeAndPrefixQueue.remove();

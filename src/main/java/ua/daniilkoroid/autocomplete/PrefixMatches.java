@@ -128,7 +128,7 @@ public class PrefixMatches {
 	 */
 	public Iterable<String> wordsWithPrefix(String pref, int k) {
 		Iterable<String> wordsWithPrefix = trie.wordsWithPrefix(pref);
-		LinkedList<String> wordsWithPrefixAndLength = new LinkedList<String>();
+		LinkedList<String> wordsWithPrefixAndLength = new LinkedList<>();
 		int prefLength = pref.length();
 		int currentPrefLength = prefLength;
 		int differentLengthCounter = 0;
