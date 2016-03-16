@@ -41,6 +41,21 @@ public class Tuple {
 		this.weight = weight;
 	}
 
+        /**
+         * Creates tuple with given term.
+         * <p>
+         * By weight of term is used {@link String#length()}.
+         * </p>
+         * <p>
+         * If given term is <code>null</code> - <code>0</code> weight is used.
+         * </p>
+         * @param term term to be stored in tuple
+         */
+        public Tuple(String term) {
+            this.term = term;
+            this.weight = term != null ? term.length() : 0;
+        }
+        
 	/**
 	 * Get tuple's term.
 	 * 
