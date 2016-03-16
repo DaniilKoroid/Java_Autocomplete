@@ -26,9 +26,9 @@ public class PrefixMatches {
     private final int DEFAULT_SEARCH_LENGTH = 3;
     
     /**
-     * Minimal length of string that can be added to in-memorry dictionary.
+     * Minimal length of string that can be added to in-memory dictionary.
      */
-    private final int MINIMAL_STRING_TO_ADD_LENGTH = 2;
+    private final int MINIMAL_STRING_TO_ADD_LENGTH = 3;
 
     /**
      * Trie that is used to store words.

@@ -80,6 +80,11 @@ public class RWayTrie implements Trie {
     private final String EMPTY_PREFIX = "";
 
     /**
+     * First letter in used alphabet.
+     */
+    private final char FIRST_ALPHABET_LETTER = 'a';
+    
+    /**
      * Empty node root.
      */
     private Node root;
@@ -126,9 +131,9 @@ public class RWayTrie implements Trie {
     }
 
     public Iterable<String> wordsWithPrefix(String pref) {
-        Queue<String> queue = new LinkedList<String>();
         Node node = get(root, pref, 0);
-        collect(node, pref, queue);
+        Queue<String> queue = new LinkedList<String>();
+        collectBFS(node, pref, queue);
         return queue;
     }
 
@@ -153,7 +158,7 @@ public class RWayTrie implements Trie {
         } else if (d == key.length()) {
             result = node;
         } else {
-            char c = key.charAt(d);
+            int c = key.charAt(d) - FIRST_ALPHABET_LETTER;
             result = get(node.next[c], key, d + 1);
         }
         return result;
@@ -174,7 +179,7 @@ public class RWayTrie implements Trie {
      */
     private Node put(Node node, Tuple tuple, int d) {
         if (node == null) {
-            node = new Node(ALPHABET_SIZE);
+            node = new Node();
         }
         String term = tuple.getTerm();
         if (d == term.length()) {
@@ -182,7 +187,7 @@ public class RWayTrie implements Trie {
             size++;
             return node;
         }
-        char c = term.charAt(d);
+        int c = term.charAt(d) - FIRST_ALPHABET_LETTER;
         node.next[c] = put(node.next[c], tuple, d + 1);
         return node;
     }
@@ -195,13 +200,38 @@ public class RWayTrie implements Trie {
         if (node.value != 0) {
             q.offer(pref);
         }
-        char firstAlphabetLetter = 'a';
         //TODO: make breadth-first search
         for (char c = 0; c < ALPHABET_SIZE; c++) {
-            collect(node.next[c], pref + ('a' + c), q);
+        	String newPref = new StringBuilder(pref).append((char)(FIRST_ALPHABET_LETTER + c)).toString();
+            collect(node.next[c], newPref, q);
         }
     }
 
+    private void collectBFS(Node root, String pref, Queue<String> q) {
+    	if(root == null) {
+    		return;
+    	}
+    	Queue<Node> nodeQueue = new LinkedList<Node>();
+    	Queue<String> prefsQueue = new LinkedList<String>();
+    	nodeQueue.add(root);
+    	prefsQueue.add(pref);
+    	while(!nodeQueue.isEmpty()) {
+    		Node node = nodeQueue.remove();
+    		String prefFromQueue = prefsQueue.remove();
+    		if(node.value != 0) {
+    			q.offer(prefFromQueue);
+    		}
+    		for (int c = 0; c < ALPHABET_SIZE; c++) {
+    			if(node.next[c] != null) {
+    				nodeQueue.offer(node.next[c]);
+    				String newPref = new StringBuilder(prefFromQueue).append((char)(FIRST_ALPHABET_LETTER + c)).toString();
+    				prefsQueue.offer(newPref);
+    			}
+            }
+    	}
+    	
+    }
+    
     /**
      * Deletes given key from given node.
      *
@@ -218,7 +248,7 @@ public class RWayTrie implements Trie {
         if (d == key.length()) {
             node.value = 0;
         } else {
-            char c = key.charAt(d);
+            int c = key.charAt(d) - FIRST_ALPHABET_LETTER;
             node.next[c] = delete(node.next[c], key, d + 1);
         }
 
@@ -226,7 +256,7 @@ public class RWayTrie implements Trie {
             return node;
         }
 
-        for (char c = 'a'; c < 'a' + ALPHABET_SIZE; c++) {
+        for (char c = 0; c < ALPHABET_SIZE; c++) {
             if (node.next[c] != null) {
                 return node;
             }
@@ -234,3 +264,4 @@ public class RWayTrie implements Trie {
         return null;
     }
 }
+
