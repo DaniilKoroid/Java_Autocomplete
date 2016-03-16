@@ -83,7 +83,7 @@ public class RWayTrie implements Trie {
      * First letter in used alphabet.
      */
     private final char FIRST_ALPHABET_LETTER = 'a';
-    
+
     /**
      * Empty node root.
      */
@@ -192,46 +192,65 @@ public class RWayTrie implements Trie {
         return node;
     }
 
-    //TODO: make javadoc
-    private void collect(Node node, String pref, Queue<String> q) {
-        if (node == null) {
+    /**
+     * Collects all stored words that start from given base prefix and start
+     * search from given node.
+     *
+     * @param root node to start collecting from
+     * @param basePrefix base prefix of words to collect
+     * @param q queue to collect words
+     */
+    private void collectBFS(Node root, String basePrefix, Queue<String> q) {
+
+        /**
+         * Local class used to associate node with prefix that is stored with
+         * given node.
+         */
+        class NodePrefixTuple {
+
+            /**
+             * Node to store in tuple.
+             */
+            private final Node node;
+
+            /**
+             * Prefix that is associated with given node.
+             */
+            private final String prefix;
+
+            /**
+             * Create tuple of node and associated prefix.
+             *
+             * @param node node to store
+             * @param prefix appropriate prefix
+             */
+            public NodePrefixTuple(Node node, String prefix) {
+                this.node = node;
+                this.prefix = prefix;
+            }
+        }
+
+        if (root == null) {
             return;
         }
-        if (node.value != 0) {
-            q.offer(pref);
-        }
-        //TODO: make breadth-first search
-        for (char c = 0; c < ALPHABET_SIZE; c++) {
-        	String newPref = new StringBuilder(pref).append((char)(FIRST_ALPHABET_LETTER + c)).toString();
-            collect(node.next[c], newPref, q);
+        Queue<NodePrefixTuple> nodeAndPrefixQueue = new LinkedList<NodePrefixTuple>();
+        nodeAndPrefixQueue.add(new NodePrefixTuple(root, basePrefix));
+        while (!nodeAndPrefixQueue.isEmpty()) {
+            NodePrefixTuple tuple = nodeAndPrefixQueue.remove();
+            Node node = tuple.node;
+            String prefix = tuple.prefix;
+            if (node.value != 0) {
+                q.offer(prefix);
+            }
+            for (int c = 0; c < ALPHABET_SIZE; c++) {
+                if (node.next[c] != null) {
+                    String newPref = new StringBuilder(prefix).append((char) (FIRST_ALPHABET_LETTER + c)).toString();
+                    nodeAndPrefixQueue.offer(new NodePrefixTuple(node.next[c], newPref));
+                }
+            }
         }
     }
 
-    private void collectBFS(Node root, String pref, Queue<String> q) {
-    	if(root == null) {
-    		return;
-    	}
-    	Queue<Node> nodeQueue = new LinkedList<Node>();
-    	Queue<String> prefsQueue = new LinkedList<String>();
-    	nodeQueue.add(root);
-    	prefsQueue.add(pref);
-    	while(!nodeQueue.isEmpty()) {
-    		Node node = nodeQueue.remove();
-    		String prefFromQueue = prefsQueue.remove();
-    		if(node.value != 0) {
-    			q.offer(prefFromQueue);
-    		}
-    		for (int c = 0; c < ALPHABET_SIZE; c++) {
-    			if(node.next[c] != null) {
-    				nodeQueue.offer(node.next[c]);
-    				String newPref = new StringBuilder(prefFromQueue).append((char)(FIRST_ALPHABET_LETTER + c)).toString();
-    				prefsQueue.offer(newPref);
-    			}
-            }
-    	}
-    	
-    }
-    
     /**
      * Deletes given key from given node.
      *
@@ -264,4 +283,3 @@ public class RWayTrie implements Trie {
         return null;
     }
 }
-
