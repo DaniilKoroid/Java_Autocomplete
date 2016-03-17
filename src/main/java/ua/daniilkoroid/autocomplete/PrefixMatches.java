@@ -133,6 +133,7 @@ public class PrefixMatches {
         for (String wordWithPrefix : wordsWithPrefix) {
             if (wordWithPrefix.length() != currentPrefLength) {
                 differentLengthCounter++;
+				currentPrefLength = wordWithPrefix.length();
                 if (differentLengthCounter >= k) {
                     break;
                 }
