@@ -3,7 +3,7 @@
  */
 package ua.daniilkoroid.autocomplete;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,9 +64,9 @@ public class PrefixMatches {
      * @return number of strings that were added
      */
     public int add(String... strings) {
-        strings = filterInputStrings(strings);
+        String[] filteredStrings = filterInputStrings(strings);
         int beforeAddSize = size();
-        for (String string : strings) {
+        for (String string : filteredStrings) {
             trie.add(new Tuple(string));
         }
         int afterAddSize = size();
@@ -126,8 +126,11 @@ public class PrefixMatches {
         Iterable<String> wordsWithPrefix = trie.wordsWithPrefix(pref);
         LinkedList<String> wordsWithPrefixAndLength = new LinkedList<>();
 
-        int prefLength = pref.length();
-        int currentPrefLength = prefLength;
+        int currentPrefLength = -1;
+        if(wordsWithPrefix.iterator().hasNext()) {
+        	currentPrefLength = wordsWithPrefix.iterator().next().length();
+        }
+        
         int differentLengthCounter = 0;
 
         for (String wordWithPrefix : wordsWithPrefix) {
@@ -186,8 +189,7 @@ public class PrefixMatches {
                 }
             }
         }
-        String[] resultArray = new String[0];
-        result.toArray(resultArray);
+        String[] resultArray = result.toArray(new String[result.size()]);
         return resultArray;
     }
 }
