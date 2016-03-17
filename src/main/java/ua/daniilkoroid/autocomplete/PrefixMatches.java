@@ -3,7 +3,6 @@
  */
 package ua.daniilkoroid.autocomplete;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,7 +81,9 @@ public class PrefixMatches {
      * <code>false</code>
      */
     public boolean contains(String word) {
-        return trie.contains(word);
+        return isLongerThanMinimalRequiredLength(word)
+                ? trie.contains(word)
+                : false;
     }
 
     /**
@@ -97,7 +98,9 @@ public class PrefixMatches {
      * - <code>false</code>
      */
     public boolean delete(String word) {
-        return trie.delete(word);
+        return isLongerThanMinimalRequiredLength(word)
+                ? trie.delete(word)
+                : false;
     }
 
     /**
@@ -127,16 +130,16 @@ public class PrefixMatches {
         LinkedList<String> wordsWithPrefixAndLength = new LinkedList<>();
 
         int currentPrefLength = -1;
-        if(wordsWithPrefix.iterator().hasNext()) {
-        	currentPrefLength = wordsWithPrefix.iterator().next().length();
+        if (wordsWithPrefix.iterator().hasNext()) {
+            currentPrefLength = wordsWithPrefix.iterator().next().length();
         }
-        
+
         int differentLengthCounter = 0;
 
         for (String wordWithPrefix : wordsWithPrefix) {
             if (wordWithPrefix.length() != currentPrefLength) {
                 differentLengthCounter++;
-				currentPrefLength = wordWithPrefix.length();
+                currentPrefLength = wordWithPrefix.length();
                 if (differentLengthCounter >= k) {
                     break;
                 }
@@ -171,8 +174,9 @@ public class PrefixMatches {
      * Filters given strings for being sentences.
      * <p>
      * If given string is a sentence - splits it by space. Returns array of
-     * single words. Only words that are greater than
-     * {@link #MINIMAL_STRING_TO_ADD_LENGTH} will pass the filter.
+     * single words. Only words on which
+     * {@link #isLongerThanMinimalRequiredLength(java.lang.String)} returns true
+     * added.
      * </p>
      *
      * @param strings strings to filter
@@ -184,12 +188,27 @@ public class PrefixMatches {
         for (String string : strings) {
             String[] splited = string.split(space);
             for (String splitedString : splited) {
-                if (splitedString.length() > MINIMAL_STRING_TO_ADD_LENGTH) {
+                if (isLongerThanMinimalRequiredLength(splitedString)) {
                     result.add(splitedString);
                 }
             }
         }
         String[] resultArray = result.toArray(new String[result.size()]);
         return resultArray;
+    }
+
+    /**
+     * Checks if given word has bigger length than minimal required
+     * ({@link #MINIMAL_STRING_TO_ADD_LENGTH}).
+     * <p>
+     * If null is given - returns false.
+     * </p>
+     *
+     * @param word word to check length
+     * @return <code>true</code> if given word has bigger length than
+     * {@link #MINIMAL_STRING_TO_ADD_LENGTH}. Otherwise - <code>false</code>
+     */
+    private boolean isLongerThanMinimalRequiredLength(String word) {
+        return word == null ? false : word.length() > MINIMAL_STRING_TO_ADD_LENGTH;
     }
 }

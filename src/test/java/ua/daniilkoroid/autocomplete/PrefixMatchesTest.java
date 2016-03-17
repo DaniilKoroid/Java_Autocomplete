@@ -8,7 +8,6 @@ package ua.daniilkoroid.autocomplete;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,7 +22,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mock;
 
 /**
  *
@@ -31,8 +29,7 @@ import org.mockito.Mock;
  */
 public class PrefixMatchesTest {
 
-	@Mock
-	private static PrefixMatches fullPrefixMatches = new PrefixMatches();
+	private static final PrefixMatches fullPrefixMatches = new PrefixMatches();
 
 	public PrefixMatchesTest() {
 	}
@@ -63,7 +60,7 @@ public class PrefixMatchesTest {
 
 	@Before
 	public void setUp() {
-
+  
 	}
 
 	@After
@@ -76,14 +73,15 @@ public class PrefixMatchesTest {
 	@Test
 	public void testAdd() {
 		System.out.println("add");
-		String[] strings = null;
-		PrefixMatches instance = new PrefixMatches();
-		int expResult = 0;
-		int result = instance.add(strings);
-		assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
+		String[] addedStrArr = new String[]{"word", "river", "base",
+                        "demo", "house", "cover", "queen"};
+                String[] duplicatesArr = new String[]{"cover", "cover",
+                        "cover", "cover", "cover"};
+                PrefixMatches instance = new PrefixMatches();
+                int expectedSize = addedStrArr.length;
+                assertEquals(expectedSize, instance.add(addedStrArr));
+                int zeroAdded = 0;
+                assertEquals(zeroAdded, instance.add(duplicatesArr));
 	}
 
 	/**
@@ -110,9 +108,6 @@ public class PrefixMatchesTest {
 		boolean expResult = false;
 		boolean result = instance.delete(word);
 		assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to
-		// fail.
-		fail("The test case is a prototype.");
 	}
 
 	/**

@@ -18,7 +18,7 @@ public class Tuple {
 	/**
 	 * Term to be stored in tuple.
 	 */
-	private String term;
+	private final String term;
 
 	/**
 	 * Term's {@link #term} weight.
@@ -26,7 +26,7 @@ public class Tuple {
 	 * In this current case term's length is used.
 	 * </p>
 	 */
-	private int weight;
+	private final int weight;
 
 	/**
 	 * Creates tuple with given term and it's weights.
