@@ -3,6 +3,7 @@
  */
 package ua.daniilkoroid.autocomplete;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -123,7 +124,7 @@ public class PrefixMatches {
      */
     public Iterable<String> wordsWithPrefix(String pref, int k) {
         Iterable<String> wordsWithPrefix = trie.wordsWithPrefix(pref);
-        LinkedList<String> wordsWithPrefixAndLength = new LinkedList<>();
+        ArrayList<String> wordsWithPrefixAndLength = new ArrayList<>();
 
         int currentPrefLength = -1;
         if (wordsWithPrefix.iterator().hasNext()) {
@@ -179,7 +180,7 @@ public class PrefixMatches {
      * @return array of words that were splited by space from given strings
      */
     private String[] filterInputStrings(String... strings) {
-        List<String> result = new LinkedList<>();
+        List<String> result = new ArrayList<>();
         String space = " ";
         for (String string : strings) {
             String[] splited = string.split(space);
