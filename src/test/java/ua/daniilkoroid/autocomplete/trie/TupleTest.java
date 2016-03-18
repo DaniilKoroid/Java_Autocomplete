@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Administrator
+ * @author Daniil_Koroid
  */
 public class TupleTest {
     

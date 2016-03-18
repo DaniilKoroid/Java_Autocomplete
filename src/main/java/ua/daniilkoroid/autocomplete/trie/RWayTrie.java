@@ -201,6 +201,9 @@ public class RWayTrie implements Trie {
     /**
      * Collects all stored words that start from given base prefix and start
      * search from given node.
+     * <p>
+     * Uses breadth-first search.
+     * </p>
      *
      * @param root node to start collecting from
      * @param basePrefix base prefix of words to collect

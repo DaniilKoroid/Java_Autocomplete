@@ -20,7 +20,7 @@ import org.junit.Test;
 
 /**
  *
- * @author Administrator
+ * @author Daniil_Koroid
  */
 public class RWayTrieTest {
     
@@ -56,7 +56,6 @@ public class RWayTrieTest {
         String term = "term";
         Tuple tuple = new Tuple(term);
         instance.add(tuple);
-        int instanceSize = instance.size();
         int expectedSize = 1;
         assertEquals(expectedSize, instance.size());
     }
@@ -71,11 +70,11 @@ public class RWayTrieTest {
     	String firstTerm = "term";
     	String secondTerm = "termer";
     	instance.add(new Tuple(firstTerm));
-    	int instanceInitialSize = instance.size();
+    	int expectedSize = 1;
+    	assertEquals(expectedSize, instance.size());
     	instance.add(new Tuple(secondTerm));
-    	int instanceSize = instance.size();
-    	int expectedSize = 2;
-    	assertEquals(expectedSize, instanceSize);
+    	expectedSize = 2;
+    	assertEquals(expectedSize, instance.size());
     }
 
     /**

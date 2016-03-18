@@ -43,15 +43,22 @@ public interface Trie {
     public boolean delete(String word);
 
     /**
-     * Iterator over all words, breadth-first search.
+     * Iterator over all stored words.
+     * <p>
+     * Class that implements interface must guarantee that elements in 
+     * returned {@link Iterable} were collected using breadth-first search.
+     * </p>
      *
      * @return iterator over all words
      */
     public Iterable<String> words();
 
     /**
-     * Iterator over all words that start from given prefix, breadth-first
-     * search.
+     * Iterator over all words that start from given prefix.
+     * <p>
+     * Class that implements interface must guarantee that elements in
+     * returned {@link Iterable} were collected using breadth-first search.
+     * </p>
      *
      * @param pref prefix for all words to find
      * @return iterator over all words that start from given prefix
@@ -59,9 +66,9 @@ public interface Trie {
     public Iterable<String> wordsWithPrefix(String pref);
 
     /**
-     * Words in trie count.
+     * Number of stored words in trie.
      *
-     * @return words in trie count
+     * @return number of stored words in trie
      */
     public int size();
 }
