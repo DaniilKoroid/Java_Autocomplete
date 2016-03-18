@@ -81,9 +81,7 @@ public class PrefixMatches {
      * <code>false</code>
      */
     public boolean contains(String word) {
-        return isLongerThanMinimalRequiredLength(word)
-                ? trie.contains(word)
-                : false;
+        return isFiltered(word) ? trie.contains(word) : false;
     }
 
     /**
@@ -98,9 +96,7 @@ public class PrefixMatches {
      * - <code>false</code>
      */
     public boolean delete(String word) {
-        return isLongerThanMinimalRequiredLength(word)
-                ? trie.delete(word)
-                : false;
+        return isFiltered(word)? trie.delete(word) : false;
     }
 
     /**
@@ -188,7 +184,7 @@ public class PrefixMatches {
         for (String string : strings) {
             String[] splited = string.split(space);
             for (String splitedString : splited) {
-                if (isLongerThanMinimalRequiredLength(splitedString)) {
+                if (isFiltered(splitedString)) {
                     result.add(splitedString);
                 }
             }
@@ -210,5 +206,16 @@ public class PrefixMatches {
      */
     private boolean isLongerThanMinimalRequiredLength(String word) {
         return word == null ? false : word.length() > MINIMAL_STRING_TO_ADD_LENGTH;
+    }
+
+    /**
+     * Check if given word passes filter to be operated with in-memory
+     * dictionary.
+     *
+     * @param word word to pass filter
+     * @return <code>true</code> if passes filter. Otherwise <code>false</code>
+     */
+    private boolean isFiltered(String word) {
+        return isLongerThanMinimalRequiredLength(word);
     }
 }
