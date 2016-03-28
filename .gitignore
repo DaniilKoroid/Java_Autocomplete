@@ -3,3 +3,6 @@
 
 #files
 .project
+.classpath
+.settings/
+/target/

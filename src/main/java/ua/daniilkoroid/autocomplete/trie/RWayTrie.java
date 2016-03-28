@@ -1,5 +1,6 @@
 package ua.daniilkoroid.autocomplete.trie;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -21,7 +22,7 @@ public class RWayTrie implements Trie {
      * @author Daniil_Koroid
      *
      */
-    private class Node {
+    private static class Node {
 
         /**
          * Value to be stored.
@@ -37,29 +38,10 @@ public class RWayTrie implements Trie {
         private Node[] next;
 
         /**
-         * Create node with given value.
-         *
-         * @param value value to be stored in node
-         */
-        public Node(int value) {
-            this();
-            this.value = value;
-        }
-
-        /**
          * Create empty node.
          */
         public Node() {
             next = new Node[ALPHABET_SIZE];
-        }
-
-        /**
-         * Get value that is stored in node.
-         *
-         * @return value that is stored in node
-         */
-        public int getValue() {
-            return value;
         }
     }
 
@@ -69,7 +51,7 @@ public class RWayTrie implements Trie {
      * Currently used alphabet is English alphabet which size is 26.
      * </p>
      */
-    private final int ALPHABET_SIZE = 26;
+    private static final int ALPHABET_SIZE = 26;
 
     /**
      * Empty prefix.
@@ -82,7 +64,7 @@ public class RWayTrie implements Trie {
     /**
      * First letter in used alphabet.
      */
-    private final char FIRST_ALPHABET_LETTER = 'a';
+    private static final char FIRST_ALPHABET_LETTER = 'a';
 
     /**
      * Empty node root.
@@ -137,9 +119,7 @@ public class RWayTrie implements Trie {
     @Override
     public Iterable<String> wordsWithPrefix(String pref) {
         Node node = get(root, pref, 0);
-        Queue<String> queue = new LinkedList<>();
-        collectBFS(node, pref, queue);
-        return queue;
+        return new RWayTrieIterable(node, pref);
     }
 
     @Override
@@ -199,68 +179,6 @@ public class RWayTrie implements Trie {
     }
 
     /**
-     * Collects all stored words that start from given base prefix and start
-     * search from given node.
-     * <p>
-     * Uses breadth-first search.
-     * </p>
-     *
-     * @param root node to start collecting from
-     * @param basePrefix base prefix of words to collect
-     * @param q queue to collect words
-     */
-    private void collectBFS(Node root, String basePrefix, Queue<String> q) {
-
-        /**
-         * Local class used to associate node with prefix that is stored with
-         * given node.
-         */
-        class NodePrefixTuple {
-
-            /**
-             * Node to store in tuple.
-             */
-            private final Node node;
-
-            /**
-             * Prefix that is associated with given node.
-             */
-            private final String prefix;
-
-            /**
-             * Create tuple of node and associated prefix.
-             *
-             * @param node node to store
-             * @param prefix appropriate prefix
-             */
-            public NodePrefixTuple(Node node, String prefix) {
-                this.node = node;
-                this.prefix = prefix;
-            }
-        }
-
-        if (root == null) {
-            return;
-        }
-        Queue<NodePrefixTuple> nodeAndPrefixQueue = new LinkedList<>();
-        nodeAndPrefixQueue.add(new NodePrefixTuple(root, basePrefix));
-        while (!nodeAndPrefixQueue.isEmpty()) {
-            NodePrefixTuple tuple = nodeAndPrefixQueue.remove();
-            Node node = tuple.node;
-            String prefix = tuple.prefix;
-            if (node.value != 0) {
-                q.offer(prefix);
-            }
-            for (int c = 0; c < ALPHABET_SIZE; c++) {
-                if (node.next[c] != null) {
-                    String newPref = new StringBuilder(prefix).append((char) (FIRST_ALPHABET_LETTER + c)).toString();
-                    nodeAndPrefixQueue.offer(new NodePrefixTuple(node.next[c], newPref));
-                }
-            }
-        }
-    }
-
-    /**
      * Deletes given key from given node.
      *
      * @param node node to delete given key
@@ -290,5 +208,100 @@ public class RWayTrie implements Trie {
             }
         }
         return null;
+    }
+    
+    private static class RWayTrieIterable implements Iterable<String> {
+
+    	private static class RWayTrieIterator implements Iterator<String> {
+
+    		/**
+             * Local class used to associate node with prefix that is stored with
+             * given node.
+             */
+            private static class NodePrefixTuple {
+
+                /**
+                 * Node to store in tuple.
+                 */
+                private final Node node;
+
+                /**
+                 * Prefix that is associated with given node.
+                 */
+                private final String prefix;
+
+                /**
+                 * Create tuple of node and associated prefix.
+                 *
+                 * @param node node to store
+                 * @param prefix appropriate prefix
+                 */
+                public NodePrefixTuple(Node node, String prefix) {
+                    this.node = node;
+                    this.prefix = prefix;
+                }
+            }
+    		
+    		private Queue<NodePrefixTuple> nodePrefixQueue;
+    		
+    		private NodePrefixTuple next;
+    		
+    		public RWayTrieIterator(Node root, String prefix) {
+    			if(root == null || prefix == null) {
+    				next = null;
+    				return;
+    			}
+    			nodePrefixQueue = new LinkedList<>();
+    			nodePrefixQueue.offer(new NodePrefixTuple(root, prefix));
+    			findNext();
+    		}
+    		
+			@Override
+			public boolean hasNext() {
+				return next != null;
+			}
+
+			@Override
+			public String next() {
+				NodePrefixTuple toReturn = next;
+				findNext();
+				return toReturn.prefix;
+			}
+			
+			private void findNext() {
+				boolean found = false;
+				while(!found) {
+					if(nodePrefixQueue.isEmpty()) {
+						next = null;
+						return;
+					}
+					NodePrefixTuple tuple = nodePrefixQueue.remove();
+					Node node = tuple.node;
+					String prefix = tuple.prefix;
+					if(node.value != 0) {
+						next = tuple;
+						found = true;
+					}
+					for(int c = 0; c < ALPHABET_SIZE; c++) {
+						if(node.next[c] != null) {
+							String newPref = new StringBuilder(prefix).append((char) (FIRST_ALPHABET_LETTER + c)).toString();
+							nodePrefixQueue.offer(new NodePrefixTuple(node.next[c], newPref));
+						}
+					}
+				}
+			}  		
+    	}
+    	
+    	private Iterator<String> iterator;
+    	
+    	public RWayTrieIterable(Node root, String prefix) {
+    		iterator = new RWayTrieIterator(root, prefix);
+    	}
+    	
+		@Override
+		public Iterator<String> iterator() {
+			return iterator;
+		}
+    	
     }
 }
