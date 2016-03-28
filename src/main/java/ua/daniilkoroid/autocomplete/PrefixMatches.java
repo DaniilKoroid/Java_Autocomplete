@@ -5,6 +5,7 @@ package ua.daniilkoroid.autocomplete;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -218,5 +219,29 @@ public class PrefixMatches {
      */
     private boolean isFiltered(String word) {
         return isLongerThanMinimalRequiredLength(word);
+    }
+    
+    private static class PrefixMatchesIterable implements Iterable<String> {
+    	private static class PrefixMatchesIterator implements Iterator<String> {
+
+			@Override
+			public boolean hasNext() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public String next() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+    		
+    	}
+
+		@Override
+		public Iterator<String> iterator() {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
 }

@@ -10,6 +10,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.After;
@@ -226,6 +228,19 @@ public class RWayTrieTest {
     	int expectedSize = words.length;
     	int resultSize = instance.size();
     	assertEquals(expectedSize, resultSize);
+    }
+    
+    @Test(expected = ConcurrentModificationException.class)
+    public void testWordsConcurrentModificationExceptionOnNewAdd() {
+    	RWayTrie instance = new RWayTrie();
+    	String[] words = new String[]{"word", "qwerty", "asdf", "rhvadio", "radio", "tvmaster"};
+    	for(String wordToAdd : words) {
+        	instance.add(new Tuple(wordToAdd));
+        }
+    	Iterable<String> result = instance.words();
+    	Iterator<String> iterator = result.iterator();
+    	instance.add(new Tuple("qwertyujkl"));
+    	iterator.next();
     }
     
 }
