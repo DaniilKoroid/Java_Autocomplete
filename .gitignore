@@ -1,8 +1,11 @@
 #folders
 /target/*
+/target/
+.settings/
 
 #files
 .project
 .classpath
-.settings/
-/target/
+nb-configuration.xml
+
+

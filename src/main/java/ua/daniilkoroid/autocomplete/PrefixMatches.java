@@ -5,9 +5,10 @@ package ua.daniilkoroid.autocomplete;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import ua.daniilkoroid.autocomplete.trie.RWayTrie;
 import ua.daniilkoroid.autocomplete.trie.Trie;
@@ -37,6 +38,11 @@ public class PrefixMatches {
      */
     private final Trie trie;
 
+    /**
+     * The number of times this structure was modified.
+     */
+    private int modCount;
+    
     /**
      * Create object with default in-memory dictionary which is {@link RWayTrie}
      * .
@@ -68,6 +74,7 @@ public class PrefixMatches {
         String[] filteredStrings = filterInputStrings(strings);
         int beforeAddSize = size();
         for (String string : filteredStrings) {
+            updateModCount();
             trie.add(new Tuple(string));
         }
         int afterAddSize = size();
@@ -98,7 +105,14 @@ public class PrefixMatches {
      * - <code>false</code>
      */
     public boolean delete(String word) {
-        return isFiltered(word)? trie.delete(word) : false;
+        boolean result = false;
+        if(isFiltered(word)) {
+            result = trie.delete(word);
+            if(result) {
+                updateModCount();
+            }
+        }
+        return result;
     }
 
     /**
@@ -124,34 +138,7 @@ public class PrefixMatches {
      * such words are found - {@link Collections#emptyList()} is returned
      */
     public Iterable<String> wordsWithPrefix(String pref, int k) {
-        Iterable<String> wordsWithPrefix = trie.wordsWithPrefix(pref);
-        ArrayList<String> wordsWithPrefixAndLength = new ArrayList<>();
-
-        int currentPrefLength = -1;
-        if (wordsWithPrefix.iterator().hasNext()) {
-            currentPrefLength = wordsWithPrefix.iterator().next().length();
-        }
-
-        int differentLengthCounter = 0;
-
-        for (String wordWithPrefix : wordsWithPrefix) {
-            if (wordWithPrefix.length() != currentPrefLength) {
-                differentLengthCounter++;
-                currentPrefLength = wordWithPrefix.length();
-                if (differentLengthCounter >= k) {
-                    break;
-                }
-            }
-            wordsWithPrefixAndLength.add(wordWithPrefix);
-        }
-
-        Iterable<String> result;
-        if (wordsWithPrefixAndLength.isEmpty()) {
-            result = Collections.emptyList();
-        } else {
-            result = wordsWithPrefixAndLength;
-        }
-        return result;
+        return new PrefixMatchesIterable(pref, k);
     }
 
     /**
@@ -220,28 +207,74 @@ public class PrefixMatches {
     private boolean isFiltered(String word) {
         return isLongerThanMinimalRequiredLength(word);
     }
+
+    private void updateModCount() {
+        modCount++;
+    }
     
-    private static class PrefixMatchesIterable implements Iterable<String> {
-    	private static class PrefixMatchesIterator implements Iterator<String> {
+    private class PrefixMatchesIterable implements Iterable<String> {
 
-			@Override
-			public boolean hasNext() {
-				// TODO Auto-generated method stub
-				return false;
-			}
+        private Iterator<String> iterator;
 
-			@Override
-			public String next() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-    		
-    	}
+        public PrefixMatchesIterable(String pref, int k) {
+            iterator = new PrefixMatchesIterator(pref, k);
+        }
 
-		@Override
-		public Iterator<String> iterator() {
-			// TODO Auto-generated method stub
-			return null;
-		}
+        @Override
+        public Iterator<String> iterator() {
+            return iterator;
+        }
+    }
+
+    private class PrefixMatchesIterator implements Iterator<String> {
+        
+        Iterator<String> trieIterator;       
+        private final int totalK;
+        private int currentK;
+        private String next;
+        int expectedModCount = modCount;
+        
+        public PrefixMatchesIterator(String pref, int k) {
+            totalK = k;
+            currentK = 1;
+            trieIterator = trie.wordsWithPrefix(pref).iterator();
+            if(trieIterator.hasNext()) {
+                next = trieIterator.next();
+            }
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return next != null;
+        }
+
+        @Override
+        public String next() {
+            checkForComodification();
+            checkForPresenceOfNextElement();
+            String result = next;
+            String newNext = trieIterator.next();
+            if(newNext.length() > next.length()) {
+                currentK++;
+                if(currentK > totalK) {
+                    next = null;
+                } else {
+                    next = newNext;
+                }
+            }
+            return result;
+        }
+        
+        private void checkForComodification() {
+            if(expectedModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+        }
+        
+        private void checkForPresenceOfNextElement() {
+            if(next == null) {
+                throw new NoSuchElementException();
+            }
+        }
     }
 }
