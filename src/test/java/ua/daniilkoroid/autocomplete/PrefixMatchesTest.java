@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,11 +42,6 @@ import ua.daniilkoroid.autocomplete.trie.Tuple;
 @RunWith(MockitoJUnitRunner.class)
 public class PrefixMatchesTest {
 
-	/**
-	 * Instance where were added all words from tested file dictionary.
-	 */
-	private static final PrefixMatches fullPrefixMatches = new PrefixMatches();
-
 	@Mock
 	private Trie mockTrie;
 
@@ -55,33 +51,8 @@ public class PrefixMatchesTest {
 	public PrefixMatchesTest() {
 	}
 
-	/**
-	 * Finds file with words (dictionary) to store, stores them into
-	 * {@link #fullPrefixMatches} PrefixMatches object.
-	 * 
-	 * @throws IOException
-	 */
 	@BeforeClass
 	public static void setUpClass() throws IOException {
-		String fileName = "src\\test\\resources\\words-333333.txt";
-		File f = new File(fileName);
-		try (BufferedReader reader = new BufferedReader(new FileReader(f));) {
-			int linesToSkip = 1;
-			reader.lines().skip(linesToSkip).forEach(new Consumer<String>() {
-
-				/**
-				 * Space to delimit words in tested file.
-				 */
-				private final String SPACE = "	";
-
-				@Override
-				public void accept(String str) {
-					String[] arr = str.split(SPACE);
-					String strToAdd = arr[arr.length - 1];
-					fullPrefixMatches.add(strToAdd);
-				}
-			});
-		}
 	}
 
 	@AfterClass
@@ -130,11 +101,7 @@ public class PrefixMatchesTest {
 	@Test
 	public void testContains() {
 		System.out.println("contains");
-		String[] surelyContainedWordsArr = new String[] { "stalwart", "seitz", "tomaszewski", "ministerien" };
-		boolean expResult = true;
-		for (String containedWord : surelyContainedWordsArr) {
-			assertEquals(expResult, fullPrefixMatches.contains(containedWord));
-		}
+                fail("test not implemented");
 	}
 
 	/**
@@ -211,14 +178,7 @@ public class PrefixMatchesTest {
 	@Test
 	public void testWordsWithPrefix_String_int() {
 		System.out.println("wordsWithPrefix with words of different lengthes");
-		String pref = "goo";
-		int k = 1;
-		Iterable<String> result = fullPrefixMatches.wordsWithPrefix(pref, k);
-		Map<Integer, Boolean> usedLengthsMap = new HashMap<>();
-		for (String str : result) {
-			usedLengthsMap.put(str.length(), true);
-		}
-		assertEquals(k, usedLengthsMap.size());
+		fail("Test not implemented");
 	}
 
 	/**
@@ -228,12 +188,7 @@ public class PrefixMatchesTest {
 	@Test
 	public void testWordsWithPrefix_String_areGreaterThanMinimumRequiredLength() {
 		System.out.println("wordsWithPrefix are greater than minimum required length");
-		String emptyPrefix = "";
-		int minRequiredLength = 2;
-		Iterable<String> result = fullPrefixMatches.wordsWithPrefix(emptyPrefix);
-		for (String str : result) {
-			assertTrue(str.length() > minRequiredLength);
-		}
+		fail("Test not implemented");
 	}
 
 	/**
@@ -244,12 +199,7 @@ public class PrefixMatchesTest {
 	@Test
 	public void testWordsWithPrefix_String_noWordsShorterThanMinimumRequiredLength() {
 		System.out.println("wordsWithPrefix no words that are shorter than minimum required length");
-		String emptyPrefix = "";
-		int minRequiredLength = 2;
-		Iterable<String> result = fullPrefixMatches.wordsWithPrefix(emptyPrefix);
-		for (String str : result) {
-			assertFalse(str.length() <= minRequiredLength);
-		}
+		fail("Test not implemented");
 	}
 
 }
