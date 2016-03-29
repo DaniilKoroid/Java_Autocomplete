@@ -81,7 +81,7 @@ public class RWayTrie implements Trie {
      * Stores number of modifications.
      */
     private int modCount;
-    
+
     /**
      * Create RWayTrie.
      * <p>
@@ -97,7 +97,7 @@ public class RWayTrie implements Trie {
     @Override
     public void add(Tuple tuple) {
         if (!contains(tuple.getTerm())) {
-        	updateModificationsCount();
+            updateModificationsCount();
             put(root, tuple, 0);
         }
     }
@@ -217,32 +217,32 @@ public class RWayTrie implements Trie {
         }
         return null;
     }
-    
+
     /**
      * Updates modification count of RWayTrie.
      */
     private void updateModificationsCount() {
-    	modCount++;
+        modCount++;
     }
-    
+
     private class RWayTrieIterable implements Iterable<String> {
-    	
-    	private Iterator<String> iterator;
-    	
-    	public RWayTrieIterable(Node root, String prefix) {
-    		iterator = new RWayTrieIterator(root, prefix);
-    	}
-    	
-		@Override
-		public Iterator<String> iterator() {
-			return iterator;
-		}
-    	
+
+        private Iterator<String> iterator;
+
+        public RWayTrieIterable(Node root, String prefix) {
+            iterator = new RWayTrieIterator(root, prefix);
+        }
+
+        @Override
+        public Iterator<String> iterator() {
+            return iterator;
+        }
+
     }
-    
+
     /**
-     * Local class used to associate node with prefix that is stored with
-     * given node.
+     * Local class used to associate node with prefix that is stored with given
+     * node.
      */
     private static class NodePrefixTuple {
 
@@ -267,65 +267,65 @@ public class RWayTrie implements Trie {
             this.prefix = prefix;
         }
     }
-    
-    private class RWayTrieIterator implements Iterator<String> {
-		
-		private Queue<NodePrefixTuple> nodePrefixQueue;
-		
-		private NodePrefixTuple next;
-		
-		private int expectedModCount = modCount;
-		
-		public RWayTrieIterator(Node root, String prefix) {
-			if(root == null || prefix == null) {
-				next = null;
-				return;
-			}
-			nodePrefixQueue = new LinkedList<>();
-			nodePrefixQueue.offer(new NodePrefixTuple(root, prefix));
-			findNext();
-		}
-		
-		@Override
-		public boolean hasNext() {
-			return next != null;
-		}
 
-		@Override
-		public String next() {
-			checkForComodification();
-			NodePrefixTuple toReturn = next;
-			findNext();
-			return toReturn.prefix;
-		}
-		
-		private void findNext() {
-			boolean found = false;
-			while(!found) {
-				if(nodePrefixQueue.isEmpty()) {
-					next = null;
-					return;
-				}
-				NodePrefixTuple tuple = nodePrefixQueue.remove();
-				Node node = tuple.node;
-				String prefix = tuple.prefix;
-				if(node.value != 0) {
-					next = tuple;
-					found = true;
-				}
-				for(int c = 0; c < ALPHABET_SIZE; c++) {
-					if(node.next[c] != null) {
-						String newPref = new StringBuilder(prefix).append((char) (FIRST_ALPHABET_LETTER + c)).toString();
-						nodePrefixQueue.offer(new NodePrefixTuple(node.next[c], newPref));
-					}
-				}
-			}
-		}
-		
-		private void checkForComodification() {
-			if(expectedModCount != modCount) {
-				throw new ConcurrentModificationException();
-			}
-		}
-	}
+    private class RWayTrieIterator implements Iterator<String> {
+
+        private Queue<NodePrefixTuple> nodePrefixQueue;
+
+        private NodePrefixTuple next;
+
+        private int expectedModCount = modCount;
+
+        public RWayTrieIterator(Node root, String prefix) {
+            if (root == null || prefix == null) {
+                next = null;
+                return;
+            }
+            nodePrefixQueue = new LinkedList<>();
+            nodePrefixQueue.offer(new NodePrefixTuple(root, prefix));
+            findNext();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return next != null;
+        }
+
+        @Override
+        public String next() {
+            checkForComodification();
+            NodePrefixTuple toReturn = next;
+            findNext();
+            return toReturn.prefix;
+        }
+
+        private void findNext() {
+            boolean found = false;
+            while (!found) {
+                if (nodePrefixQueue.isEmpty()) {
+                    next = null;
+                    return;
+                }
+                NodePrefixTuple tuple = nodePrefixQueue.remove();
+                Node node = tuple.node;
+                String prefix = tuple.prefix;
+                if (node.value != 0) {
+                    next = tuple;
+                    found = true;
+                }
+                for (int c = 0; c < ALPHABET_SIZE; c++) {
+                    if (node.next[c] != null) {
+                        String newPref = new StringBuilder(prefix).append((char) (FIRST_ALPHABET_LETTER + c)).toString();
+                        nodePrefixQueue.offer(new NodePrefixTuple(node.next[c], newPref));
+                    }
+                }
+            }
+        }
+
+        private void checkForComodification() {
+            if (expectedModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+        }
+    }
 }

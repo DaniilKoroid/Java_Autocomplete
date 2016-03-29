@@ -4,7 +4,6 @@
 package ua.daniilkoroid.autocomplete;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +41,7 @@ public class PrefixMatches {
      * The number of times this structure was modified.
      */
     private int modCount;
-    
+
     /**
      * Create object with default in-memory dictionary which is {@link RWayTrie}
      * .
@@ -90,7 +89,11 @@ public class PrefixMatches {
      * <code>false</code>
      */
     public boolean contains(String word) {
-        return isFiltered(word) ? trie.contains(word) : false;
+        boolean result = false;
+        if (isFiltered(word)) {
+            result = trie.contains(word);
+        }
+        return result;
     }
 
     /**
@@ -106,9 +109,9 @@ public class PrefixMatches {
      */
     public boolean delete(String word) {
         boolean result = false;
-        if(isFiltered(word)) {
+        if (isFiltered(word)) {
             result = trie.delete(word);
-            if(result) {
+            if (result) {
                 updateModCount();
             }
         }
@@ -211,7 +214,7 @@ public class PrefixMatches {
     private void updateModCount() {
         modCount++;
     }
-    
+
     private class PrefixMatchesIterable implements Iterable<String> {
 
         private Iterator<String> iterator;
@@ -227,22 +230,22 @@ public class PrefixMatches {
     }
 
     private class PrefixMatchesIterator implements Iterator<String> {
-        
-        Iterator<String> trieIterator;       
+
+        Iterator<String> trieIterator;
         private final int totalK;
         private int currentK;
         private String next;
         int expectedModCount = modCount;
-        
+
         public PrefixMatchesIterator(String pref, int k) {
             totalK = k;
             currentK = 1;
             trieIterator = trie.wordsWithPrefix(pref).iterator();
-            if(trieIterator.hasNext()) {
+            if (trieIterator.hasNext()) {
                 next = trieIterator.next();
             }
         }
-        
+
         @Override
         public boolean hasNext() {
             return next != null;
@@ -253,26 +256,32 @@ public class PrefixMatches {
             checkForComodification();
             checkForPresenceOfNextElement();
             String result = next;
-            String newNext = trieIterator.next();
-            if(newNext.length() > next.length()) {
-                currentK++;
-                if(currentK > totalK) {
-                    next = null;
+            if (trieIterator.hasNext()) {
+                String newNext = trieIterator.next();
+                if (newNext.length() > next.length()) {
+                    currentK++;
+                    if (currentK > totalK) {
+                        next = null;
+                    } else {
+                        next = newNext;
+                    }
                 } else {
                     next = newNext;
                 }
+            } else {
+                next = null;
             }
             return result;
         }
-        
+
         private void checkForComodification() {
-            if(expectedModCount != modCount) {
+            if (expectedModCount != modCount) {
                 throw new ConcurrentModificationException();
             }
         }
-        
+
         private void checkForPresenceOfNextElement() {
-            if(next == null) {
+            if (next == null) {
                 throw new NoSuchElementException();
             }
         }
