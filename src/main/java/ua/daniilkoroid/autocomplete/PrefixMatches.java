@@ -25,12 +25,12 @@ public class PrefixMatches {
     /**
      * Default length of search.
      */
-    private final int DEFAULT_SEARCH_LENGTH = 3;
+    private static final int DEFAULT_SEARCH_LENGTH = 3;
 
     /**
      * Minimal length of string that can be added to in-memory dictionary.
      */
-    private final int MINIMAL_STRING_TO_ADD_LENGTH = 2;
+    private static final int MINIMAL_STRING_TO_ADD_LENGTH = 2;
 
     /**
      * Trie that is used to store words.
@@ -197,7 +197,11 @@ public class PrefixMatches {
      * {@link #MINIMAL_STRING_TO_ADD_LENGTH}. Otherwise - <code>false</code>
      */
     private boolean isLongerThanMinimalRequiredLength(String word) {
-        return word == null ? false : word.length() > MINIMAL_STRING_TO_ADD_LENGTH;
+        boolean result = false;
+        if (word != null) {
+            result = word.length() > MINIMAL_STRING_TO_ADD_LENGTH;
+        }
+        return result;
     }
 
     /**
@@ -217,7 +221,7 @@ public class PrefixMatches {
 
     private class PrefixMatchesIterable implements Iterable<String> {
 
-        private Iterator<String> iterator;
+        private final Iterator<String> iterator;
 
         public PrefixMatchesIterable(String pref, int k) {
             iterator = new PrefixMatchesIterator(pref, k);
@@ -231,15 +235,16 @@ public class PrefixMatches {
 
     private class PrefixMatchesIterator implements Iterator<String> {
 
-        Iterator<String> trieIterator;
+        private final Iterator<String> trieIterator;
         private final int totalK;
         private int currentK;
         private String next;
-        int expectedModCount = modCount;
+        private final int expectedModCount;
 
         public PrefixMatchesIterator(String pref, int k) {
             totalK = k;
             currentK = 1;
+            expectedModCount = modCount;
             trieIterator = trie.wordsWithPrefix(pref).iterator();
             if (trieIterator.hasNext()) {
                 next = trieIterator.next();

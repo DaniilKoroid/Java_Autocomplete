@@ -60,7 +60,7 @@ public class RWayTrie implements Trie {
      * Empty prefix is prefix for all words.
      * </p>
      */
-    private final String EMPTY_PREFIX = "";
+    private static final String EMPTY_PREFIX = "";
 
     /**
      * First letter in used alphabet.
@@ -315,8 +315,11 @@ public class RWayTrie implements Trie {
                 }
                 for (int c = 0; c < ALPHABET_SIZE; c++) {
                     if (node.next[c] != null) {
-                        String newPref = new StringBuilder(prefix).append((char) (FIRST_ALPHABET_LETTER + c)).toString();
-                        nodePrefixQueue.offer(new NodePrefixTuple(node.next[c], newPref));
+                        String newPref = new StringBuilder(prefix)
+                                .append((char) (FIRST_ALPHABET_LETTER + c))
+                                .toString();
+                        nodePrefixQueue.offer(
+                                new NodePrefixTuple(node.next[c], newPref));
                     }
                 }
             }

@@ -13,7 +13,7 @@ public interface Trie {
      *
      * @param tuple tuple to be added
      */
-    public void add(Tuple tuple);
+    void add(Tuple tuple);
 
     /**
      * Checks if given word is contained in trie.
@@ -26,7 +26,7 @@ public interface Trie {
      * @return <code>true</code> if given word is contained in this trie.
      * Otherwise returns <code>false</code>
      */
-    public boolean contains(String word);
+    boolean contains(String word);
 
     /**
      * Deletes given word from trie.
@@ -40,35 +40,35 @@ public interface Trie {
      * @return <code>true</code> if word is contained in trie and was deleted.
      * Otherwise - <code>false</code>
      */
-    public boolean delete(String word);
+    boolean delete(String word);
 
     /**
      * Iterator over all stored words.
      * <p>
-     * Class that implements interface must guarantee that elements in 
-     * returned {@link Iterable} were collected using breadth-first search.
+     * Class that implements interface must guarantee that elements in returned
+     * {@link Iterable} were collected using breadth-first search.
      * </p>
      *
      * @return iterator over all words
      */
-    public Iterable<String> words();
+    Iterable<String> words();
 
     /**
      * Iterator over all words that start from given prefix.
      * <p>
-     * Class that implements interface must guarantee that elements in
-     * returned {@link Iterable} were collected using breadth-first search.
+     * Class that implements interface must guarantee that elements in returned
+     * {@link Iterable} were collected using breadth-first search.
      * </p>
      *
      * @param pref prefix for all words to find
      * @return iterator over all words that start from given prefix
      */
-    public Iterable<String> wordsWithPrefix(String pref);
+    Iterable<String> wordsWithPrefix(String pref);
 
     /**
      * Number of stored words in trie.
      *
      * @return number of stored words in trie
      */
-    public int size();
+    int size();
 }
